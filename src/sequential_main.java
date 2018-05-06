@@ -31,6 +31,7 @@ public class sequential_main{
     }
 
     public static void computeNGrams(int n, char[] fileString){
+        System.out.println(System.currentTimeMillis());
 
         for (int i = 0; i < fileString.length - n + 1; i++){
             StringBuilder builder = new StringBuilder();
@@ -39,17 +40,19 @@ public class sequential_main{
                 builder.append(fileString[i+j]);
             }
 
-            System.out.println(builder.toString());
+            //System.out.println(builder.toString());
         }
+
+        System.out.println(System.currentTimeMillis());
 
     }
 
     public static void main(String[] args) {
         char[] text = readTextFromFile();
+        System.out.println("Bigrams:");
         computeNGrams(2, text);
-        computeNGrams(3, text);
+        //System.out.println("Trigrams:");
+        //computeNGrams(3, text);
 
     }
 }
-
-

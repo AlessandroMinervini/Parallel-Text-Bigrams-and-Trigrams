@@ -11,29 +11,32 @@ import java.io.FileOutputStream;
 public class parallel_main {
 
 
-    public static void saveToTxt(String fileName, String bigrams) throws FileNotFoundException {
+    public static void saveToTxt(String fileName, String bigrams, String trigrams) throws FileNotFoundException {
         PrintWriter pw = new PrintWriter(new FileOutputStream(fileName));
         pw.write(bigrams);
+        pw.write(trigrams);
         pw.close();
     }
 
 
     public static void main(String args[]) {
 
-        int fileLen = sequential_main.readTextFromFile().length;
+        char[] fileString = sequential_main.readTextFromFile();
+
+        int fileLen = fileString.length;
         int threads = Runtime.getRuntime().availableProcessors();
         int realThreads = threads/2;
 
         ArrayList<parallel_thread> threadsArray = new ArrayList<>();
 
         for (int i = 0; i < realThreads; i++) {
-            parallel_thread t = new parallel_thread("" + i, i*fileLen/realThreads, (i+1)*fileLen/realThreads, 2);
+            parallel_thread t = new parallel_thread("" + i, i*fileLen/realThreads, (i+1)*fileLen/realThreads, 2, fileString);
+            threadsArray.add(t);
+
             t.start();
 
-            int tIndex = Integer.parseInt(t.getIdThread()) + 1;
-            System.out.println("Thread " + tIndex + " starts...");
-
-            threadsArray.add(t);
+            //int tIndex = Integer.parseInt(t.getIdThread()) + 1;
+            //System.out.println("Thread " + tIndex + " starts...");
 
             /*Runnable worker = new parallel_thread("t" + i, i*fileLen/realThreads, (i+1)*fileLen/realThreads, 2);
             executor.execute(worker);*/     //questo solo se si fa implement runnable
@@ -51,12 +54,19 @@ public class parallel_main {
         System.out.println("Finished all threads");
 
         String finalBigrams = "";
+        String finalTrigrams = "";
+
         for (parallel_thread t: threadsArray) {
-            finalBigrams += t.getBigrams();
+            if (t.getN() == 2){
+                finalBigrams += t.getBigrams();
+            }
+            else {
+                finalTrigrams += t.getTrigrams();
+            }
         }
 
         try{
-            saveToTxt("bigrams.txt", finalBigrams);
+            saveToTxt("n-grams.txt", finalBigrams, finalTrigrams);
             System.out.println("Successfully saved n-grams");
         }
         catch (FileNotFoundException e){
