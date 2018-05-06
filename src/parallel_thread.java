@@ -1,11 +1,11 @@
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
-public class parallel_thread extends Thread {
+public class parallel_thread implements Callable<ArrayList<String>> {
 
     private int start, stop, n;
     private String id;
-    private ArrayList<String> bigrams;
-    private ArrayList<String> trigrams;
+    private ArrayList<String> n_grams;
     private char[] fileString;
 
     public parallel_thread(String id, int start, int stop, int n, char[] fileString){   //n is the n-grams dimension
@@ -15,14 +15,11 @@ public class parallel_thread extends Thread {
         this.stop = stop;
         this.n = n;
         this.fileString = fileString;
-        this.bigrams = new ArrayList<>();
-        this.trigrams = new ArrayList<>();
+        this.n_grams = new ArrayList<>();
 
     }
 
-    public void run() {
-        System.out.println("start" + this.id + ":");
-        System.out.println(System.currentTimeMillis());
+    public ArrayList<String> call() {
 
         for (int i = this.start; i < this.stop - this.n + 1; i++) {
             StringBuilder builder = new StringBuilder();       //builder di bigrammi
@@ -31,45 +28,17 @@ public class parallel_thread extends Thread {
                 builder.append(this.fileString[i + j]);
             }
 
-            if (this.n == 2) {
-                String bigr = builder.toString();
-                this.bigrams.add(bigr);
+            if (this.n == 2 || this.n == 3) {
+                String N_gr = builder.toString();
+                this.n_grams.add(N_gr);
+                return n_grams;
             }
-            else{
-                if (this.n == 3){
-                    String trigr = builder.toString();
-                    this.trigrams.add(trigr);
-                }
-                else {
-                    System.out.println("invalid n");
-                }
+
+            else {
+                System.out.println("invalid n");
             }
+
         }
-
-        System.out.println("end" + this.id + ":");
-        System.out.println(System.currentTimeMillis());
-
-    }
-
-    public String getIdThread() {
-
-        return this.id;
-
-    }
-
-    public ArrayList<String> getBigrams(){
-
-        return this.bigrams;
-
-    }
-
-    public ArrayList<String> getTrigrams(){
-
-        return this.trigrams;
-
-    }
-
-    public int getN() {
-        return n;
+        return null;
     }
 }
