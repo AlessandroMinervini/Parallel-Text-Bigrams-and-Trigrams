@@ -5,6 +5,8 @@ import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.lang.Character;
+import java.util.ArrayList;
+
 
 public class sequential_main{
 
@@ -30,8 +32,10 @@ public class sequential_main{
         }
     }
 
-    public static void computeNGrams(int n, char[] fileString){
-        System.out.println(System.currentTimeMillis());
+    public static ArrayList<String> computeNGrams(int n, char[] fileString){
+
+        ArrayList<String> finalNgrams = new ArrayList<>();
+
 
         for (int i = 0; i < fileString.length - n + 1; i++){
             StringBuilder builder = new StringBuilder();
@@ -40,19 +44,29 @@ public class sequential_main{
                 builder.append(fileString[i+j]);
             }
 
+            finalNgrams.add(builder.toString());
             //System.out.println(builder.toString());
         }
 
-        System.out.println(System.currentTimeMillis());
+        return finalNgrams;
 
     }
 
     public static void main(String[] args) {
         char[] text = readTextFromFile();
-        System.out.println("Bigrams:");
-        computeNGrams(2, text);
-        //System.out.println("Trigrams:");
+
+        long start = System.nanoTime();
+
+        //System.out.println("Bigrams:");
         //computeNGrams(3, text);
+
+
+        System.out.println("Trigrams:");
+        computeNGrams(3, text);
+
+        long end = System.nanoTime();
+
+        System.out.println(end-start);
 
     }
 }

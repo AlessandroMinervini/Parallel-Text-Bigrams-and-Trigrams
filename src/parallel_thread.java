@@ -31,7 +31,6 @@ public class parallel_thread implements Callable<ArrayList<String>> {
             if (this.n == 2 || this.n == 3) {
                 String N_gr = builder.toString();
                 this.n_grams.add(N_gr);
-                return n_grams;
             }
 
             else {
@@ -39,6 +38,6 @@ public class parallel_thread implements Callable<ArrayList<String>> {
             }
 
         }
-        return null;
+        return n_grams;
     }
 }

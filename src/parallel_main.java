@@ -2,13 +2,8 @@ import java.util.ArrayList;
 import java.io.FileNotFoundException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.lang.InterruptedException;
 import java.io.PrintWriter;
 import java.io.FileOutputStream;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 
@@ -31,40 +26,46 @@ public class parallel_main {
         int realThreads = threads/2;
 
         ArrayList<String> finalNgrams = new ArrayList<>();
-
-        long start = System.currentTimeMillis();
-
         ArrayList<Future> futuresArray = new ArrayList<>();
 
+        ExecutorService executor = Executors.newFixedThreadPool(realThreads);
+
+        long start,end;
+        start = System.nanoTime();
+
+        for (int i = 0; i < realThreads; i++) {
+
+            Future f = executor.submit(new parallel_thread("t" + i, i*fileLen/realThreads, (i+1)
+                    *fileLen/realThreads, 3, fileString));
+            futuresArray.add(f);
+            
+        }
+
+        executor.shutdown();
+
+        while (!executor.isTerminated()){}
+
+        end = System.nanoTime();
+
+        System.out.println(end-start);
+
         try{
-            for (int i = 0; i < realThreads; i++) {
-
-                ExecutorService executor = Executors.newFixedThreadPool(realThreads);
-
-                futuresArray.add(executor.submit(new parallel_thread("t" + i, i*fileLen/realThreads, (i+1)*fileLen/realThreads, 2, fileString)));     //questo solo se si fa implement runnable
-            }
 
             for (Future <ArrayList<String>> f : futuresArray) {
                 ArrayList<String> n_grams = f.get();
                 finalNgrams.addAll(n_grams);
             }
-        }
-        catch (Exception e){
-            System.out.println(e);
-        }
 
-        System.out.println("Finished all threads");
+            System.out.println("Finished all threads");
+            //System.out.println(finalNgrams);
 
-        long end = System.currentTimeMillis();
-        System.out.println(finalNgrams);
-        System.out.println(end-start);
-
-        try{
             saveToTxt("n-grams.txt", finalNgrams);
             System.out.println("Successfully saved n-grams");
+
         }
-        catch (FileNotFoundException e){
-            System.out.println(e);
+
+        catch (Exception e){
+                System.out.println(e);
         }
 
     }
