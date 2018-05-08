@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -5,7 +6,6 @@ import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.lang.Character;
-import java.util.ArrayList;
 
 
 public class sequential_main{
@@ -32,10 +32,9 @@ public class sequential_main{
         }
     }
 
-    public static ArrayList<String> computeNGrams(int n, char[] fileString){
+    public static String computeNGrams(int n, char[] fileString){
 
-        ArrayList<String> finalNgrams = new ArrayList<>();
-
+        String finalNgrams = "";
 
         for (int i = 0; i < fileString.length - n + 1; i++){
             StringBuilder builder = new StringBuilder();
@@ -43,9 +42,7 @@ public class sequential_main{
             for (int j = 0; j < n; j ++){
                 builder.append(fileString[i+j]);
             }
-
-            finalNgrams.add(builder.toString());
-            //System.out.println(builder.toString());
+            finalNgrams += builder.toString();
         }
 
         return finalNgrams;
@@ -55,18 +52,22 @@ public class sequential_main{
     public static void main(String[] args) {
         char[] text = readTextFromFile();
 
-        long start = System.nanoTime();
+        System.out.println("Bigrams:");
 
-        //System.out.println("Bigrams:");
-        //computeNGrams(3, text);
+        long start = 0;
+        long end = 0;
 
+        try {
+            start = System.currentTimeMillis();
+            parallel_main.saveToTxt("n-grams-seq.txt", computeNGrams(2, text), 2);
+            end = System.currentTimeMillis();
+        }
+        catch (FileNotFoundException e){
+            System.out.println(e);
+        }
 
-        System.out.println("Trigrams:");
-        computeNGrams(3, text);
+        System.out.println("Total time: " + (end-start));
 
-        long end = System.nanoTime();
-
-        System.out.println(end-start);
 
     }
 }

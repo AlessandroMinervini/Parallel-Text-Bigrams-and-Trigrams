@@ -5,15 +5,25 @@ import java.util.concurrent.Executors;
 import java.io.PrintWriter;
 import java.io.FileOutputStream;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 
 public class parallel_main {
 
 
-    public static void saveToTxt(String fileName, ArrayList<String> n_grams) throws FileNotFoundException {
+    public static void saveToTxt(String fileName, String n_grams, int n) throws FileNotFoundException {
+
         PrintWriter pw = new PrintWriter(new FileOutputStream(fileName));
-        pw.write(n_grams.toString());
+
+        for (int i = 1; i <= n_grams.length(); i++){
+            char c = n_grams.charAt(i-1);
+            pw.write(c);
+            if (i % n == 0)
+                pw.write("\n");
+        }
+
         pw.close();
+
     }
 
 
@@ -25,41 +35,40 @@ public class parallel_main {
         int threads = Runtime.getRuntime().availableProcessors();
         int realThreads = threads/2;
 
-        ArrayList<String> finalNgrams = new ArrayList<>();
+        String finalNgrams = "";
         ArrayList<Future> futuresArray = new ArrayList<>();
 
         ExecutorService executor = Executors.newFixedThreadPool(realThreads);
 
-        long start,end;
-        start = System.nanoTime();
+        long start;
+        start = System.currentTimeMillis();
 
         for (int i = 0; i < realThreads; i++) {
 
             Future f = executor.submit(new parallel_thread("t" + i, i*fileLen/realThreads, (i+1)
-                    *fileLen/realThreads, 3, fileString));
+                    *fileLen/realThreads, 2, fileString));
+
             futuresArray.add(f);
             
         }
 
-        executor.shutdown();
-
-        while (!executor.isTerminated()){}
-
-        end = System.nanoTime();
-
-        System.out.println(end-start);
-
         try{
 
-            for (Future <ArrayList<String>> f : futuresArray) {
-                ArrayList<String> n_grams = f.get();
-                finalNgrams.addAll(n_grams);
+            for (Future <String> f : futuresArray) {
+                String n_grams = f.get();
+                finalNgrams += n_grams;
             }
 
-            System.out.println("Finished all threads");
-            //System.out.println(finalNgrams);
+            System.out.println("lenght: " + finalNgrams.length());
+            awaitTerminationAfterShutdown(executor);
 
-            saveToTxt("n-grams.txt", finalNgrams);
+            System.out.println("Finished all threads");
+
+            long end = System.currentTimeMillis();
+
+            System.out.println("Total time: " + (end-start));
+
+            saveToTxt("n-grams-par.txt", finalNgrams, 2);
             System.out.println("Successfully saved n-grams");
 
         }
@@ -68,5 +77,17 @@ public class parallel_main {
                 System.out.println(e);
         }
 
+    }
+
+    public static void awaitTerminationAfterShutdown(ExecutorService threadPool) {
+        threadPool.shutdown();
+        try {
+            if (!threadPool.awaitTermination(60, TimeUnit.SECONDS)) {
+                threadPool.shutdownNow();
+            }
+        } catch (InterruptedException ex) {
+            threadPool.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 }

@@ -1,12 +1,13 @@
-import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
-public class parallel_thread implements Callable<ArrayList<String>> {
+public class parallel_thread implements Callable<String> {
 
     private int start, stop, n;
     private String id;
-    private ArrayList<String> n_grams;
+    private String n_grams;
     private char[] fileString;
+
+    StringBuilder builder;
 
     public parallel_thread(String id, int start, int stop, int n, char[] fileString){   //n is the n-grams dimension
 
@@ -15,28 +16,30 @@ public class parallel_thread implements Callable<ArrayList<String>> {
         this.stop = stop;
         this.n = n;
         this.fileString = fileString;
-        this.n_grams = new ArrayList<>();
+        this.n_grams = "";
 
     }
 
-    public ArrayList<String> call() {
+    public String call() {
 
-        for (int i = this.start; i < this.stop - this.n + 1; i++) {
-            StringBuilder builder = new StringBuilder();       //builder di bigrammi
+        for (int i = this.start; i < this.stop - n + 1; i++) {
+
+            builder = new StringBuilder();       //builder di bigrammi
+
 
             for (int j = 0; j < this.n; j++) {
                 builder.append(this.fileString[i + j]);
             }
 
+
             if (this.n == 2 || this.n == 3) {
                 String N_gr = builder.toString();
-                this.n_grams.add(N_gr);
+                n_grams += N_gr;
             }
 
             else {
                 System.out.println("invalid n");
             }
-
         }
         return n_grams;
     }
