@@ -1,31 +1,11 @@
 import java.util.ArrayList;
-import java.io.FileNotFoundException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.io.PrintWriter;
-import java.io.FileOutputStream;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.*;
 
 
 public class parallel_main {
-
-
-    public static void saveToTxt(String fileName, String n_grams, int n) throws FileNotFoundException {
-
-        PrintWriter pw = new PrintWriter(new FileOutputStream(fileName));
-
-        for (int i = 1; i <= n_grams.length(); i++){
-            char c = n_grams.charAt(i-1);
-            pw.write(c);
-            if (i % n == 0)
-                pw.write("\n");
-        }
-
-        pw.close();
-
-    }
-
 
     public static void main(String args[]) {
 
@@ -35,12 +15,13 @@ public class parallel_main {
         int threads = Runtime.getRuntime().availableProcessors();
         int realThreads = threads/2;
 
-        String finalNgrams = "";
+        ConcurrentHashMap<String, Integer> finalNgrams = new ConcurrentHashMap();
+
         ArrayList<Future> futuresArray = new ArrayList<>();
 
         ExecutorService executor = Executors.newFixedThreadPool(realThreads);
 
-        long start;
+        long start, end;
         start = System.currentTimeMillis();
 
         for (int i = 0; i < realThreads; i++) {
@@ -53,23 +34,28 @@ public class parallel_main {
         }
 
         try{
-
-            for (Future <String> f : futuresArray) {
-                String n_grams = f.get();
-                finalNgrams += n_grams;
+            for (Future <ConcurrentHashMap<String, Integer>> f : futuresArray) {
+                ConcurrentHashMap<String, Integer> n_grams = f.get();
+                finalNgrams.putAll(n_grams);
             }
 
-            System.out.println("lenght: " + finalNgrams.length());
             awaitTerminationAfterShutdown(executor);
 
             System.out.println("Finished all threads");
 
-            long end = System.currentTimeMillis();
+            end = System.currentTimeMillis();
+
+            Set set = finalNgrams.entrySet();
+
+            Iterator iterator = set.iterator();
+
+            while(iterator.hasNext()) {
+                Map.Entry map_entry = (Map.Entry)iterator.next();
+                System.out.print("key: "+ map_entry.getKey() + " , value: ");
+                System.out.println(map_entry.getValue());
+            }
 
             System.out.println("Total time: " + (end-start));
-
-            saveToTxt("n-grams-par.txt", finalNgrams, 2);
-            System.out.println("Successfully saved n-grams");
 
         }
 

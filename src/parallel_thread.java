@@ -1,10 +1,11 @@
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class parallel_thread implements Callable<String> {
+public class parallel_thread implements Callable<ConcurrentHashMap<String, Integer>> {
 
     private int start, stop, n;
     private String id;
-    private String n_grams;
+    private ConcurrentHashMap<String, Integer> n_grams;
     private char[] fileString;
 
     StringBuilder builder;
@@ -16,25 +17,33 @@ public class parallel_thread implements Callable<String> {
         this.stop = stop;
         this.n = n;
         this.fileString = fileString;
-        this.n_grams = "";
+        this.n_grams = new ConcurrentHashMap();
 
     }
 
-    public String call() {
+    public ConcurrentHashMap<String, Integer> call() {
 
         for (int i = this.start; i < this.stop - n + 1; i++) {
 
             builder = new StringBuilder();       //builder di bigrammi
 
-
             for (int j = 0; j < this.n; j++) {
                 builder.append(this.fileString[i + j]);
             }
 
-
             if (this.n == 2 || this.n == 3) {
-                String N_gr = builder.toString();
-                n_grams += N_gr;
+
+                String key = builder.toString();
+
+                if(!this.n_grams.containsKey(key)){
+                    this.n_grams.put(builder.toString(), 1);
+                }
+                else{
+                    if(this.n_grams.containsKey(key)){
+                        this.n_grams.put(builder.toString(), this.n_grams.get(key) + 1);
+                    }
+                }
+
             }
 
             else {
