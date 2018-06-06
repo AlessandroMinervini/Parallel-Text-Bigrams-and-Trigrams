@@ -36,7 +36,7 @@ public class parallel_main {
         try{
             for (Future <ConcurrentHashMap<String, Integer>> f : futuresArray) {
                 ConcurrentHashMap<String, Integer> n_grams = f.get();
-                finalNgrams.merge(n_grams);            //TODO cambia metodo, per fare merge a modo
+                finalNgrams.putAll(n_grams);
             }
 
             awaitTerminationAfterShutdown(executor);
