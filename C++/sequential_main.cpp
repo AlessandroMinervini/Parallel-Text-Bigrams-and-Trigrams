@@ -44,7 +44,7 @@ char* readTextFromFile() {
 	buffer[i] = c;
 	}
 
-	char blackList[] = ",.':;() ";
+	char blackList[] = ",.?'!:[];() ";
 
 	for (int i = 0; i < strlen(blackList); i++){
 		removeChar(buffer, blackList[i]);
@@ -71,14 +71,18 @@ std::unordered_map<std::string, int> computeNgrams(int n, char* fileString){
 			key.append(&c);
 		}
 
-		if(!map.count(key)){
+		if(!map.count(key) && key.length() >= 2){
+
 				std::pair<std::string,int> pair (key,1);
                 map.insert(pair);
+
             }
             else{
-                if(map.count(key)){
-                	std::pair<std::string,int> pair (key, map.at(key) + 1);
-                    map.insert(pair);
+
+                if(map.count(key) && key.length() > 2){
+
+                    map[key] += 1;
+
                 }
             }
     }
