@@ -44,7 +44,7 @@ char* readTextFromFile() {
 	buffer[i] = c;
 	}
 
-	char blackList[] = ",.?'!:[];() ";
+	char blackList[] = ",(.?')!:[; ]";
 
 	for (int i = 0; i < strlen(blackList); i++){
 		removeChar(buffer, blackList[i]);
