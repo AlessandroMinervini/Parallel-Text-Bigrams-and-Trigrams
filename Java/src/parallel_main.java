@@ -5,7 +5,21 @@ import java.util.Set;
 import java.util.concurrent.*;
 
 
+
 public class parallel_main {
+
+
+    public static ConcurrentHashMap<String, Integer> HashMerge(ConcurrentHashMap<String, Integer> n_grams, ConcurrentHashMap<String, Integer> finalNgrams) {
+        for (ConcurrentHashMap.Entry<String, Integer> entry : n_grams.entrySet()) {
+            int newValue = entry.getValue();
+            Integer existingValue = finalNgrams.get(entry.getKey());
+            if (existingValue != null) {
+                newValue = newValue + existingValue;
+            }
+            finalNgrams.put(entry.getKey(), newValue);
+        }
+        return finalNgrams;
+    }
 
     public static void main(String args[]) {
 
@@ -30,13 +44,13 @@ public class parallel_main {
                     *fileLen/realThreads, 2, fileString));
 
             futuresArray.add(f);
-            
+
         }
 
         try{
             for (Future <ConcurrentHashMap<String, Integer>> f : futuresArray) {
                 ConcurrentHashMap<String, Integer> n_grams = f.get();
-                finalNgrams.putAll(n_grams);
+                HashMerge(n_grams,finalNgrams);
             }
 
             awaitTerminationAfterShutdown(executor);
@@ -60,7 +74,7 @@ public class parallel_main {
         }
 
         catch (Exception e){
-                System.out.println(e);
+            System.out.println(e);
         }
 
     }
@@ -77,3 +91,4 @@ public class parallel_main {
         }
     }
 }
+
