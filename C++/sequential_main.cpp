@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <unordered_map>
 
+using namespace std;
+
 void removeChar(char* s, char charToRemove){
 	char* copy = s;  // an alias to iterate through s without moving s
     char* temp = s;
@@ -55,15 +57,15 @@ char* readTextFromFile() {
 	return buffer;
 }
 
-std::unordered_map<std::string, int> computeNgrams(int n, char* fileString){
+unordered_map<string, int> computeNgrams(int n, char* fileString){
 
-	std::unordered_map<std::string, int> map;
+	unordered_map<string, int> map;
 
-	const std::basic_string<char> fileStr = fileString;
+	const basic_string<char> fileStr = fileString;
 
 	for (int i = 0; i < fileStr.length() - n + (n-1); i++){
 		
-		std::string key = "";
+		string key = "";
 
 		for (int j = 0; j < n; j++){
 
@@ -73,7 +75,7 @@ std::unordered_map<std::string, int> computeNgrams(int n, char* fileString){
 
 		if(!map.count(key) && key.length() >= 2){
 
-				std::pair<std::string,int> pair (key,1);
+				pair<string,int> pair (key,1);
                 map.insert(pair);
 
             }
