@@ -46,14 +46,14 @@ char* readTextFromFile() {
 	buffer[i] = c;
 	}
 
-	char blackList[] = ",(.?')!:[; ]";
+	char blackList[] = "~`!@#$%^&*()_-+=|][{}-':;?/>.<,òàèì°ç§é ";
 
 	for (int i = 0; i < strlen(blackList); i++){
 		removeChar(buffer, blackList[i]);
 	}
 
 	fclose (pFile);
-
+	//cout<< buffer; 
 	return buffer;
 }
 
@@ -61,19 +61,28 @@ unordered_map<string, int> computeNgrams(int n, char* fileString){
 
 	unordered_map<string, int> map;
 
-	const basic_string<char> fileStr = fileString;
+	//const basic_string<char> fileStr = fileString;
+	string fileStr = fileString;
+	//cout<<fileString;
+	//char copy [fileStr.length()]; 
 
-	for (int i = 0; i < fileStr.length() - n + (n-1); i++){
-		
+	for (int i = n-1; i < fileStr.length(); i++){
 		string key = "";
 
-		for (int j = 0; j < n; j++){
-
-			char c = fileStr[i+j];
-			key.append(&c);
+		for(int j=n-1; j>=0; j--){
+			key = key + fileStr[i-j];
 		}
 
-		if(!map.count(key) && key.length() >= 2){
+		//cout<<"-"<<key[0]<<key[1];
+
+		//for (int j = 0; j < n; j++){
+		//	char c = fileStr[i+j];
+		//	key.append(&c);
+		//	cout<<key;
+		//}
+		//cout<<c1<<c2;
+
+		if(map.count(key) == 0){
 
 				pair<string,int> pair (key,1);
                 map.insert(pair);
@@ -81,7 +90,7 @@ unordered_map<string, int> computeNgrams(int n, char* fileString){
             }
             else{
 
-                if(map.count(key) && key.length() > 2){
+                if(map.count(key) >= 1){
 
                     map[key] += 1;
 
@@ -97,7 +106,7 @@ int main(int argc, char const *argv[]){
 
 	char* text = readTextFromFile();
 
-	std::unordered_map<std::string, int> map = computeNgrams(2, text);
+	std::unordered_map<std::string, int> map = computeNgrams(3, text);
   	
 	for (auto& x: map)
     	std::cout << x.first << ": " << x.second << std::endl;
