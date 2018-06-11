@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <unordered_map>
+#include <chrono>
+#include <algorithm>
 
 using namespace std;
 
@@ -15,6 +17,7 @@ void removeChar(char* s, char charToRemove){
         	*temp++ = *copy;
         copy++;
     }
+
     *temp = 0;
 }
 
@@ -68,6 +71,9 @@ unordered_map<string, int> computeNgrams(int n, char* fileString){
 
 	string fileStr = fileString;
 
+	fileStr.erase(remove(fileStr.begin(), fileStr.end(), '\n'), fileStr.end());
+
+
 	for (int i = n-1; i < fileStr.length(); i++){
 		string key = "";
 
@@ -94,12 +100,20 @@ unordered_map<string, int> computeNgrams(int n, char* fileString){
 
 int main(int argc, char const *argv[]){
 
+	auto start = chrono::high_resolution_clock::now();
+
 	char* text = readTextFromFile();
 
-	std::unordered_map<std::string, int> map = computeNgrams(3, text);
+	unordered_map<string, int> map = computeNgrams(2, text);
   	
-	for (auto& x: map)
-    	std::cout << x.first << ": " << x.second << std::endl;
+	for (auto& x: map){
+    	cout << x.first << ": " << x.second << endl;
+	}
+
+	auto finish = chrono::high_resolution_clock::now();
+	chrono::duration<double> elapsed = finish - start;
+	cout << "Elapsed time: " << elapsed.count() << " s\n";
+
 
 	return 0;
 }
