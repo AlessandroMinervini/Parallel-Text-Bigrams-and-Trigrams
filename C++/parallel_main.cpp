@@ -1,17 +1,19 @@
 #include <iostream>
 #include <string>
 #include <stdlib.h>
-#include <assert.h>
 #include <unordered_map>
 #include <chrono>
-#include <thread>
 #include <algorithm>
-//#include "parallel_thread.h"
+#include <vector>
+#include <thread>
+#include <math.h> 
+
+#include "parallel_thread.h"
+
 using namespace std;
 
-
 void removeChar(char* s, char charToRemove){
-	char* copy = s;  // an alias to iterate through s without moving s
+	char* copy = s;
     char* temp = s;
 
     while (*copy){
@@ -52,12 +54,12 @@ char* readTextFromFile() {
 		fputs ("Reading error",stderr); exit (3);
 	}
 
-	for (int i = 0; i < size; ++i){
+	for (int i = 0; i < size; ++i){		//makes the text lower
 		char c = tolower(buffer[i]);
 		buffer[i] = c;
 	}
 
-	char blackList[] = "~`!@#$%^&*()_-+=|][{}-':;?/>.<,òàèì°ç§é ";
+	char blackList[] = "~`!@#$%^&*()_-+=|][{}-':;?/>.<,òàèì°ç§é ";		//list of char to be removed from text
 
 	for (int i = 0; i < strlen(blackList); i++){
 		removeChar(buffer, blackList[i]);
@@ -67,67 +69,80 @@ char* readTextFromFile() {
 	return buffer;
 }
 
-unordered_map<string, int> computeNgrams(int n, char* fileString, unsigned int nThread, int start, int stop){
+unordered_map<string, int> hashMerge(unordered_map<string, int> map, unordered_map<string, int> finalMap) {
 
-	unordered_map<string, int> map;
+    for (auto& x: map){    
+    	int newValue = x.second;		//value of x
+    	int existingValue = finalMap[x.first];
 
-	string fileStr = fileString;
+    	if(existingValue != 0){
+    		newValue = newValue + existingValue;
+    	}
 
-	fileStr.erase(remove(fileStr.begin(), fileStr.end(), '\n'), fileStr.end());
-
-
-	for (int i = start + n-1; i < stop; i++){
-		string key = "";
-
-		for(int j=n-1; j>=0; j--){
-			key = key + fileStr[i-j];
-		}
-
-		if(map.count(key) == 0){
-
-				pair<string,int> pair (key,1);
-                map.insert(pair);
-            }
-            else{
-
-                if(map.count(key) >= 1){
-
-                    map[key] += 1;
-                }
-            }
+        finalMap[x.first] = newValue;
     }
-    	for (auto& x: map){
-    	cout << x.first << ": " << x.second << endl;
-	}
-	return map;
+    return finalMap;
 }
 
 int main(int argc, char const *argv[]){
 
-	auto start = chrono::high_resolution_clock::now();
+	auto s = chrono::high_resolution_clock::now();
 
 	char* text = readTextFromFile();
 
-	unsigned int nThread = thread::hardware_concurrency();
+	string txt = text;
 
-	thread threads[nThread];
-	unordered_map<string, int> maps[nThread];
+	txt.erase(remove(txt.begin(), txt.end(), '\n'), txt.end());
 
-	int len = strlen(text);
-	cout<<len;
+	int len = txt.length();
+	unsigned int nThread = 2;		//number of threads
 
-	//unordered_map<string, int> map = computeNgrams(2, text);
-	for(int i =0; i <nThread; i++){
-		thread T(computeNgrams, 2 ,text, nThread, (i*len)/nThread, (i+1)*len/nThread);
-		T.join();
+	parallel_thread *threads[nThread];		//array of threads
+
+	vector<unordered_map<string, int> > maps;		//vector of maps
+
+	unordered_map<string, int> finalMap;
+
+	int n = 2;		//dimension of n-grams 
+
+	if(n == 2){		//bigrams computation
+		threads[0] = new parallel_thread(0, n, 0, ceil(len/nThread) - 1, txt);		//first iteration
+		for(int i =1; i <nThread; i++){
+			threads[i] = new parallel_thread(i, n, ceil((i*len)/nThread) - 1, ceil((i+1)*len/nThread) - 1, txt);
+	 	}
+	}
+	else{
+		if(n == 3){		//trigrams computation
+			threads[0] = new parallel_thread(0, n, 0, ceil(len/nThread), text);		//first iteration
+			for(int i =1; i <nThread; i++){
+				threads[i] = new parallel_thread(i, n, ceil((i*len)/nThread) - 1, ceil((i+1)*len/nThread) - 1, text);
+		 	}
+		}
 	}
 
+	for(int i =0; i <nThread; i++){		//start all threads
+		threads[i]->start();
+ 	}
 
+ 	for(int i =0; i <nThread; i++){		//join all threads and push in maps[] all the maps
+		threads[i]->join();
+		maps.push_back(threads[i]->getMap());
+ 	}
+
+ 	finalMap = maps[0];
+ 	for(int i =1; i < maps.size(); i++){		//iterate through maps and print pairs
+ 		finalMap = hashMerge(maps[i], finalMap);
+ 	}
+
+ 	for (auto& x: finalMap){
+    		cout << x.first << ": " << x.second << endl;
+		}
 
 	auto finish = chrono::high_resolution_clock::now();
-	chrono::duration<double> elapsed = finish - start;
-	cout << "Elapsed time: " << elapsed.count() << " s\n";
+	chrono::duration<double> elapsed = finish - s;
 
+	cout << "Elapsed time: " << elapsed.count() << " s\n";
 
 	return 0;
 }
+
