@@ -103,7 +103,7 @@ int main(int argc, char const *argv[]){
 
 	unordered_map<string, int> finalMap;
 
-	int n = 2;		//dimension of n-grams 
+	int n = 3;		//dimension of n-grams 
 
 	if(n == 2){		//bigrams computation
 		threads[0] = new parallel_thread(0, n, 0, ceil(len/nThread) - 1, txt);		//first iteration
@@ -113,9 +113,9 @@ int main(int argc, char const *argv[]){
 	}
 	else{
 		if(n == 3){		//trigrams computation
-			threads[0] = new parallel_thread(0, n, 0, ceil(len/nThread), text);		//first iteration
+			threads[0] = new parallel_thread(0, n, 0, ceil(len/nThread), txt);		//first iteration
 			for(int i =1; i <nThread; i++){
-				threads[i] = new parallel_thread(i, n, ceil((i*len)/nThread) - 1, ceil((i+1)*len/nThread) - 1, text);
+				threads[i] = new parallel_thread(i, n, ceil((i*len)/nThread) - 1, ceil((i+1)*len/nThread) - 1, txt);
 		 	}
 		}
 	}

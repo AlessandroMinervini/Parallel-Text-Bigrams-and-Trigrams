@@ -28,11 +28,6 @@ public:
 
 		unordered_map<string, int> map;
 
-		//string fileStr = this->fileString;
-
-		//fileStr.erase(remove(fileStr.begin(), fileStr.end(), '\n'), fileStr.end());
-
-
 		for (int i = this->begin + this->n - 1; i <= this->stop; i++){
 			string key = "";
 
