@@ -105,24 +105,13 @@ int main(int argc, char const *argv[]){
 
 	int n = 3;		//dimension of n-grams 
 
-	if(n == 2){		//bigrams computation
-		threads[0] = new parallel_thread(0, n, 0, ceil(len/nThread) - 1, txt);		//first iteration
-		for(int i =1; i <nThread; i++){
-			threads[i] = new parallel_thread(i, n, ceil((i*len)/nThread) - 1, ceil((i+1)*len/nThread) - 1, txt);
-	 	}
-	}
-	else{
-		if(n == 3){		//trigrams computation
-			threads[0] = new parallel_thread(0, n, 0, ceil(len/nThread), txt);		//first iteration
-			for(int i =1; i <nThread; i++){
-				threads[i] = new parallel_thread(i, n, ceil((i*len)/nThread) - 1, ceil((i+1)*len/nThread) - 1, txt);
-		 	}
-		}
-	}
+	int k = floor(len/nThread); 	//step of text dimension
 
-	for(int i =0; i <nThread; i++){		//start all threads
-		threads[i]->start();
- 	}
+
+	for(int i =0; i <nThread; i++){
+	 	threads[i] = new parallel_thread(i, n, (k * i), (i + 1) * k + ((n - 1) -1), txt);	//create threads
+	 	threads[i]->start();	//start all threads
+	}
 
  	for(int i =0; i <nThread; i++){		//join all threads and push in maps[] all the maps
 		threads[i]->join();
@@ -130,13 +119,14 @@ int main(int argc, char const *argv[]){
  	}
 
  	finalMap = maps[0];
+ 	
  	for(int i =1; i < maps.size(); i++){		//iterate through maps and print pairs
  		finalMap = hashMerge(maps[i], finalMap);
  	}
 
  	for (auto& x: finalMap){
-    		cout << x.first << ": " << x.second << endl;
-		}
+    	cout << x.first << ": " << x.second << endl;
+	}
 
 	auto finish = chrono::high_resolution_clock::now();
 	chrono::duration<double> elapsed = finish - s;

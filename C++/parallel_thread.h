@@ -28,6 +28,10 @@ public:
 
 		unordered_map<string, int> map;
 
+		if (stop > fileString.length() - 1){
+			stop = fileString.length() - 1;
+		}
+
 		for (int i = this->begin + this->n - 1; i <= this->stop; i++){
 			string key = "";
 

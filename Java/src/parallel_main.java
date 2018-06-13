@@ -8,7 +8,6 @@ import java.util.concurrent.*;
 
 public class parallel_main {
 
-
     public static ConcurrentHashMap<String, Integer> HashMerge(ConcurrentHashMap<String, Integer> n_grams, ConcurrentHashMap<String, Integer> finalNgrams) {
         for (ConcurrentHashMap.Entry<String, Integer> entry : n_grams.entrySet()) {
             int newValue = entry.getValue();
@@ -38,14 +37,16 @@ public class parallel_main {
         long start, end;
         start = System.currentTimeMillis();
 
+        int n = 3;
+
+        double k = Math.floor(fileLen/realThreads);
+
         for (int i = 0; i < realThreads; i++) {
 
-            Future f = executor.submit(new parallel_thread("t" + i, i*fileLen/realThreads, (i+1)
-                    *fileLen/realThreads, 2, fileString));
-
+            Future f = executor.submit(new parallel_thread("t" + i, i * k, ((i+1) * k) + (n - 1) - 1, n, fileString));
             futuresArray.add(f);
 
-        }
+            }
 
         try{
             for (Future <ConcurrentHashMap<String, Integer>> f : futuresArray) {
