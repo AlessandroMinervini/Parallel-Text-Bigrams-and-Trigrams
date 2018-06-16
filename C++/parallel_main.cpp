@@ -85,16 +85,15 @@ unordered_map<string, int> hashMerge(unordered_map<string, int> map, unordered_m
 }
 
 int main(int argc, char const *argv[]){
-
-	auto s = chrono::high_resolution_clock::now();
+	
+	struct timeval start, end;
+	gettimeofday(&start, NULL);
 
 	char* text = readTextFromFile();
-
 	string txt = text;
-
 	txt.erase(remove(txt.begin(), txt.end(), '\n'), txt.end());
-
 	int len = txt.length();
+
 	unsigned int nThread = 2;		//number of threads
 
 	parallel_thread *threads[nThread];		//array of threads
@@ -124,14 +123,13 @@ int main(int argc, char const *argv[]){
  		finalMap = hashMerge(maps[i], finalMap);
  	}
 
- 	for (auto& x: finalMap){
-    	cout << x.first << ": " << x.second << endl;
-	}
+  	gettimeofday(&end, NULL);
 
-	auto finish = chrono::high_resolution_clock::now();
-	chrono::duration<double> elapsed = finish - s;
+ // 	for (auto& x: finalMap){
+ //    	cout << x.first << ": " << x.second << endl;
+	// }
 
-	cout << "Elapsed time: " << elapsed.count() << " s\n";
+	cout << ((end.tv_sec + end.tv_usec) - (start.tv_sec + start.tv_usec)) / 1.e6 << " s" << endl;
 
 	return 0;
 }
