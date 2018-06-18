@@ -5,6 +5,9 @@
 #include <unordered_map>
 #include <chrono>
 #include <algorithm>
+#include <sys/time.h>
+#include <time.h>
+
 
 using namespace std;
 
@@ -100,20 +103,23 @@ unordered_map<string, int> computeNgrams(int n, char* fileString){
 
 int main(int argc, char const *argv[]){
 
-	auto start = chrono::high_resolution_clock::now();
+	struct timeval start, end;
+
+  	gettimeofday(&start, NULL);
 
 	char* text = readTextFromFile();
 
-	unordered_map<string, int> map = computeNgrams(2, text);
-  	
-	for (auto& x: map){
-    	cout << x.first << ": " << x.second << endl;
-	}
+  	unordered_map<string, int> map = computeNgrams(2, text);
 
-	auto finish = chrono::high_resolution_clock::now();
-	chrono::duration<double> elapsed = finish - start;
-	cout << "Elapsed time: " << elapsed.count() << " s\n";
+  	gettimeofday(&end, NULL);
 
+  	string elapsed_time = to_string( ((end.tv_sec + end.tv_usec) - (start.tv_sec + start.tv_usec)) / 1.e6 );
+
+  	cout << elapsed_time << " s" << endl;
+
+	// for (auto& x: map){
+ //    	cout << x.first << ": " << x.second << endl;
+	// }
 
 	return 0;
 }
