@@ -1,8 +1,3 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,7 +18,7 @@ public class sequential_main {
 
         try {
             Stream<String> lines = Files.lines(path);
-            char[] filestring = ((String)lines.collect(Collectors.joining())).replaceAll("[ '();:,.]", "").toCharArray();
+            char[] filestring = (lines.collect(Collectors.joining())).replaceAll("[ '();:,.]", "").toCharArray();
 
             for(int i = 0; i < filestring.length - 1; ++i) {
                 if (Character.isUpperCase(filestring[i])) {
@@ -32,8 +27,11 @@ public class sequential_main {
             }
 
             return filestring;
-        } catch (IOException var4) {
-            System.out.println(var4);
+
+        }
+
+        catch (IOException e) {
+            System.out.println(e);
             System.exit(1);
             return null;
         }
@@ -50,10 +48,12 @@ public class sequential_main {
             }
 
             String key = builder.toString();
+
             if (!hashMap.containsKey(key)) {
                 hashMap.put(builder.toString(), 1);
-            } else if (hashMap.containsKey(key)) {
-                hashMap.put(builder.toString(), (Integer)hashMap.get(key) + 1);
+            }
+            else if (hashMap.containsKey(key)) {
+                hashMap.put(builder.toString(), hashMap.get(key) + 1);
             }
         }
 
@@ -63,11 +63,12 @@ public class sequential_main {
 
     public static void main(String[] args) {
         char[] text = readTextFromFile();
-        long start = 0L;
-        long end = 0L;
+        long start, end;
+
         start = System.currentTimeMillis();
         HashMap hmap = computeNGrams(2, text);
         end = System.currentTimeMillis();
+
         Set set = hmap.entrySet();
         Iterator iterator = set.iterator();
 

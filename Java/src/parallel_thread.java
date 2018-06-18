@@ -1,16 +1,18 @@
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+//import oracle.jrockit.jfr.events.Bits;
 
 public class parallel_thread implements Callable<ConcurrentHashMap<String, Integer>> {
 
-    private int start, stop, n;
+    private int n;
+    private double start, stop;
     private String id;
     private ConcurrentHashMap<String, Integer> n_grams;
     private char[] fileString;
 
     StringBuilder builder;
 
-    public parallel_thread(String id, int start, int stop, int n, char[] fileString){   //n is the n-grams dimension
+    public parallel_thread(String id, double start, double stop, int n, char[] fileString){   //n is the n-grams dimension
 
         this.id = id;
         this.start = start;
@@ -23,12 +25,16 @@ public class parallel_thread implements Callable<ConcurrentHashMap<String, Integ
 
     public ConcurrentHashMap<String, Integer> call() {
 
-        for (int i = this.start; i < this.stop - n + 1; i++) {
+        if (stop > fileString.length-1){
+            stop = fileString.length-1;
+        }
+
+        for (double i = this.start + n - 1; i <= this.stop; i++) {
 
             builder = new StringBuilder();       //builder di bigrammi
 
-            for (int j = 0; j < this.n; j++) {
-                builder.append(this.fileString[i + j]);
+            for (double j = n - 1; j >= 0; j--) {
+                builder.append(this.fileString[(int)(i - j)]);
             }
 
             if (this.n == 2 || this.n == 3) {

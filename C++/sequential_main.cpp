@@ -9,7 +9,7 @@
 using namespace std;
 
 void removeChar(char* s, char charToRemove){
-	char* copy = s;  // an alias to iterate through s without moving s
+	char* copy = s;
     char* temp = s;
 
     while (*copy){
