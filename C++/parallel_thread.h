@@ -28,6 +28,9 @@ public:
 
 		unordered_map<string, int> map;
 
+		fileString.erase(remove(fileString.begin(), fileString.end(), '\n'), fileString.end());
+
+
 		if (stop > fileString.length() - 1){
 			stop = fileString.length() - 1;
 		}

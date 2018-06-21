@@ -6,7 +6,9 @@
 #include <algorithm>
 #include <vector>
 #include <thread>
-#include <math.h> 
+#include <math.h>
+#include <sys/time.h>
+#include <time.h>
 
 #include "parallel_thread.h"
 
@@ -86,23 +88,23 @@ unordered_map<string, int> hashMerge(unordered_map<string, int> map, unordered_m
 
 int main(int argc, char const *argv[]){
 	
+	char* text = readTextFromFile();
+
+	string txt = text;
+
 	struct timeval start, end;
 	gettimeofday(&start, NULL);
 
-	char* text = readTextFromFile();
-	string txt = text;
-	txt.erase(remove(txt.begin(), txt.end(), '\n'), txt.end());
 	int len = txt.length();
 
 	unsigned int nThread = 2;		//number of threads
+	int n = 2;		//dimension of n-grams 
 
 	parallel_thread *threads[nThread];		//array of threads
 
 	vector<unordered_map<string, int> > maps;		//vector of maps
 
 	unordered_map<string, int> finalMap;
-
-	int n = 3;		//dimension of n-grams 
 
 	int k = floor(len/nThread); 	//step of text dimension
 
@@ -125,11 +127,13 @@ int main(int argc, char const *argv[]){
 
   	gettimeofday(&end, NULL);
 
- // 	for (auto& x: finalMap){
+ // 	for (auto& x: finalMap){							uncomment to print tha map
  //    	cout << x.first << ": " << x.second << endl;
 	// }
 
-	cout << ((end.tv_sec + end.tv_usec) - (start.tv_sec + start.tv_usec)) / 1.e6 << " s" << endl;
+  	string elapsed_time = to_string( ((end.tv_sec - start.tv_sec) * 1000.0 + ( end.tv_usec - start.tv_usec) / 1000.0) / 1.e3 );
+
+  	cout << elapsed_time << endl;
 
 	return 0;
 }

@@ -103,21 +103,21 @@ unordered_map<string, int> computeNgrams(int n, char* fileString){
 
 int main(int argc, char const *argv[]){
 
+	char* text = readTextFromFile();
+
 	struct timeval start, end;
 
   	gettimeofday(&start, NULL);
 
-	char* text = readTextFromFile();
-
-  	unordered_map<string, int> map = computeNgrams(2, text);
+  	unordered_map<string, int> map = computeNgrams(3, text);
 
   	gettimeofday(&end, NULL);
 
-  	string elapsed_time = to_string( ((end.tv_sec + end.tv_usec) - (start.tv_sec + start.tv_usec)) / 1.e6 );
+  	string elapsed_time = to_string( ((end.tv_sec - start.tv_sec) * 1000.0 + ( end.tv_usec - start.tv_usec) / 1000.0) / 1.e3 );
 
-  	cout << elapsed_time << " s" << endl;
+  	cout << elapsed_time << endl;
 
-	// for (auto& x: map){
+	// for (auto& x: map){									uncomment to print the map
  //    	cout << x.first << ": " << x.second << endl;
 	// }
 
