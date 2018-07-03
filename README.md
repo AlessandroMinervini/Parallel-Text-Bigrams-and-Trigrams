@@ -1,3 +1,3 @@
 Parallel-Text-bigrams-and-trigrams
 
-Java and C++ implementations to compute n-grams from a text.
+Compute and estimate occurrences of bigrams and tri- grams in two different implementations: sequential and parallel. We study the different implementations through computational time and speed up, vary depending on num- ber of threads in the parallel version. The chosen languages are C++ and Java for the sequential version and the thread introduction in both languages for the parallel version. The tests were performed on intel i5 dual core and the results show how the parallel version nearly halves the sequential times.
