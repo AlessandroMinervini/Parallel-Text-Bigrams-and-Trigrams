@@ -117,9 +117,9 @@ int main(int argc, char const *argv[]){
 
   	cout << elapsed_time << endl;
 
-	// for (auto& x: map){									uncomment to print the map
- //    	cout << x.first << ": " << x.second << endl;
-	// }
+	for (auto& x: map){
+	   	cout << x.first << ": " << x.second << endl;
+	}
 
 	return 0;
 }

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-class parallel_thread: public Thread{
+class Parallel_thread: public Thread{
 
 private:
 	string fileString;
@@ -16,7 +16,7 @@ public:
 
 	unordered_map<string, int> map;
 
-	parallel_thread(int id, int n, int begin, int stop, string fileString){
+	Parallel_thread(int id, int n, int begin, int stop, string fileString){
 		this->id = id;
 		this->n = n;
 		this->begin = begin;

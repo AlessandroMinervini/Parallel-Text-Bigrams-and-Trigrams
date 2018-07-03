@@ -10,7 +10,7 @@
 #include <sys/time.h>
 #include <time.h>
 
-#include "parallel_thread.h"
+#include "Parallel_thread.h"
 
 using namespace std;
 
@@ -100,7 +100,7 @@ int main(int argc, char const *argv[]){
 	unsigned int nThread = 2;		//number of threads
 	int n = 2;		//dimension of n-grams 
 
-	parallel_thread *threads[nThread];		//array of threads
+	Parallel_thread *threads[nThread];		//array of threads
 
 	vector<unordered_map<string, int> > maps;		//vector of maps
 
@@ -110,7 +110,7 @@ int main(int argc, char const *argv[]){
 
 
 	for(int i =0; i <nThread; i++){
-	 	threads[i] = new parallel_thread(i, n, (k * i), (i + 1) * k + ((n - 1) -1), txt);	//create threads
+	 	threads[i] = new Parallel_thread(i, n, (k * i), (i + 1) * k + ((n - 1) -1), txt);	//create threads
 	 	threads[i]->start();	//start all threads
 	}
 
@@ -127,9 +127,9 @@ int main(int argc, char const *argv[]){
 
   	gettimeofday(&end, NULL);
 
- // 	for (auto& x: finalMap){							uncomment to print tha map
- //    	cout << x.first << ": " << x.second << endl;
-	// }
+ 	for (auto& x: finalMap){
+    	cout << x.first << ": " << x.second << endl;
+	}
 
   	string elapsed_time = to_string( ((end.tv_sec - start.tv_sec) * 1000.0 + ( end.tv_usec - start.tv_usec) / 1000.0) / 1.e3 );
 
